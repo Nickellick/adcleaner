@@ -1,0 +1,12 @@
+# Python-specific
+venv/
+.venv/
+*.pyc
+__pycache__/
+
+# IDE
+.vscode
+
+# Pyinstaller
+build/
+dist/

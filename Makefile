@@ -1,2 +1,2 @@
-build: main.py main.spec
-	pyinstaller main.spec
+build: adcleaner.py adcleaner.spec
+	pyinstaller adcleaner.spec

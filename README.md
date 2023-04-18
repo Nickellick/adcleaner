@@ -17,3 +17,5 @@ python adcleaner.py -p <path_to_folder>
 Argument `-p` is optional. If not specified, `.` is folder where scan begins.
 Example:
 ```
+python adcleaner.py -p "C:\Users\nickellick\ADprojects"
+```

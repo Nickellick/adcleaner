@@ -1,9 +1,17 @@
+import argparse
 import os
 import re
 import sys
 import shutil
 
 from tqdm import tqdm
+
+
+def init_argparse():
+    parser = argparse.ArgumentParser(description='Altium Designer & Autodesk Inventor cleaner')
+    parser.add_argument('-p', '--path', type=str, help='Path to scan for files. Scans from "." if not specified')
+    return parser.parse_args()
+
 
 def walk(path):
     remove_dirs = []
@@ -25,7 +33,15 @@ def walk(path):
 
 
 def main():
-    dirs = walk('.')
+    args = init_argparse()
+    if args.path:
+        path = args.path
+    else:
+        path = '.'
+    dirs = walk(path)
+    if not dirs:
+        print('Nothing to delete')
+        exit(0)
     print('Dirs to remove:')
     for dir in dirs:
         print(dir)
@@ -41,7 +57,6 @@ def main():
                 except OSError:
                     tqdm.write(f'Can\'t delete {dir}', file=sys.stderr)
             print('Done!')
-            input()
             exit(0)
         if answer == 'n':
             print('Nothing to do. Exiting...')

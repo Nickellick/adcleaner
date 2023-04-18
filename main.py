@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import shutil
 
 from tqdm import tqdm
@@ -34,7 +35,11 @@ def main():
         if answer == 'y':
             print('Deleting dirs...')
             for dir in tqdm(dirs):
-                shutil.rmtree(dir)
+                try:
+                    shutil.rmtree(dir)
+                    tqdm.write(f'Deleted {dir}')
+                except OSError:
+                    tqdm.write(f'Can\'t delete {dir}', file=sys.stderr)
             print('Done!')
             input()
             exit(0)

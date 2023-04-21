@@ -15,6 +15,7 @@ def init_argparse():
 
 def walk(path):
     remove_dirs = []
+    remove_files = []
     non_grated_folders = [
         '__Previews',
         'History',
@@ -22,14 +23,22 @@ def walk(path):
         'Project Logs for *',
         'Free Documents Logs for *',
     ]
-    compiled_matches = [re.compile(i) for i in non_grated_folders]
+    non_grated_files = [
+        'Thumbs.db'
+    ]
+    compiled_dir_matches = [re.compile(i) for i in non_grated_folders]
+    compiled_file_matches = [re.compile(i) for i in non_grated_files]
     print('Scanning...')
-    for root, dirs, _ in tqdm(os.walk(path)):
+    for root, dirs, files in tqdm(os.walk(path)):
+        for file in files:
+            for valid in compiled_file_matches:
+                if valid.match(file):
+                    remove_files.append(os.path.join(root, file))
         for dir in dirs:
-            for valid in compiled_matches:
+            for valid in compiled_dir_matches:
                 if valid.match(dir):
                     remove_dirs.append(os.path.join(root, dir))
-    return remove_dirs
+    return remove_dirs, remove_files
 
 
 def main():
@@ -38,24 +47,34 @@ def main():
         path = args.path
     else:
         path = '.'
-    dirs = walk(path)
-    if not dirs:
+    dirs, files = walk(path)
+    if not dirs and not files:
         print('Nothing to delete')
         exit(0)
-    print('Dirs to remove:')
+    print('Removed:')
     for dir in dirs:
-        print(dir)
+        print(f'[Dir] {dir}')
+    for file in files:
+        print(f'[File] {file}')
     while True:
-        print('Delete. Are you sure? [y/n]')
+        print('Delete? Are you sure? [y/n]')
         answer = input().lower()
         if answer == 'y':
-            print('Deleting dirs...')
+            print('Deleting directories...')
             for dir in tqdm(dirs):
                 try:
                     shutil.rmtree(dir)
                     tqdm.write(f'Deleted {dir}')
                 except OSError:
                     tqdm.write(f'Can\'t delete {dir}', file=sys.stderr)
+            print('Done!')
+            print('Deleting files...')
+            for file in tqdm(files):
+                try:
+                    os.remove(file)
+                    tqdm.write(f'Deleted {file}')
+                except OSError:
+                    tqdm.write(f'Can\'t delete {file}', file=sys.stderr)
             print('Done!')
             exit(0)
         if answer == 'n':
@@ -64,7 +83,6 @@ def main():
         else:
             print('Wrong answer, try again.')
             continue
-    
 
 
 if __name__ == '__main__':

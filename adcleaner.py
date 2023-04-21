@@ -49,9 +49,10 @@ def main():
         path = '.'
     dirs, files = walk(path)
     if not dirs and not files:
-        print('Nothing to delete')
+        print('Nothing to delete. Press any key to exit..')
+        input()
         exit(0)
-    print('Removed:')
+    print('files and dir to remove:')
     for dir in dirs:
         print(f'[Dir] {dir}')
     for file in files:
@@ -75,10 +76,12 @@ def main():
                     tqdm.write(f'Deleted {file}')
                 except OSError:
                     tqdm.write(f'Can\'t delete {file}', file=sys.stderr)
-            print('Done!')
+            print('Done! Press any key to exit...')
+            input()
             exit(0)
         if answer == 'n':
-            print('Nothing to do. Exiting...')
+            print('Nothing to do. Press any key to exit...')
+            input()
             exit(0)
         else:
             print('Wrong answer, try again.')
